@@ -9,6 +9,8 @@ from .models import (
 )
 from django.db.models.query_utils import Q
 
+from .serializers import JobPostSerializer
+
 
 class SkillView(APIView):
 
@@ -24,8 +26,12 @@ class SkillView(APIView):
 class JobView(APIView):
 
     def post(self, request):
-        job_type = int( request.data.get("job_type", None) )
-        company_name = request.data.get("company_name", None)
 
-        return Response(status=status.HTTP_200_OK)
+        JobPost_serializer = JobPostSerializer(data=request.data)
+
+        if JobPost_serializer.is_valid(): # True or False
+            JobPost_serializer.save()
+            return Response(JobPost_serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(JobPost_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
